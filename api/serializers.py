@@ -32,10 +32,12 @@ class PlayerTournamentStatSerializer(serializers.ModelSerializer):
     team_name = serializers.CharField()
     batting = BattingStatsSerializer(source='*') # Use the nested serializer
     bowling = BowlingStatsSerializer(source='*') # Use the nested serializer
+    player_name = serializers.CharField(source='player.name', read_only=True) # 👈 **THIS IS THE FIX**
 
     class Meta:
         model = PlayerTournamentStat
-        fields = ['tournament_name', 'team_name', 'batting', 'bowling']
+        # 👇 **'player_name' IS NOW ADDED HERE**
+        fields = ['player_name', 'tournament_name', 'team_name', 'batting', 'bowling']
 
 class PlayerSerializer(serializers.ModelSerializer):
     # This nests all of a player's stats directly into the player's API response
