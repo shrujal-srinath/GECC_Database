@@ -1,8 +1,11 @@
+# In api/models.py
+
 from django.db import models
 
 class Player(models.Model):
     name = models.CharField(max_length=100)
     # 👇 ADDED/UPDATED THESE FIELDS FOR THE PLAYER PROFILE
+    contact_number = models.CharField(max_length=15, unique=True, blank=True, null=True) # 👈 ADD THIS LINE
     playing_role = models.CharField(max_length=50, blank=True, null=True)
     batting_style = models.CharField(max_length=50, blank=True, null=True)
     bowling_style = models.CharField(max_length=50, blank=True, null=True)
@@ -47,6 +50,25 @@ class PlayerTournamentStat(models.Model):
 
     def __str__(self):
         return f"{self.player.name}'s stats for {self.tournament.name}"
+
+# 👇 ADD THE NEW MODEL HERE
+class PlayerEditRequest(models.Model):
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)
+    proposed_changes = models.JSONField() # Stores changes as a key-value dictionary
+    status = models.CharField(
+        max_length=20,
+        default='pending',
+        choices=[
+            ('pending', 'Pending'),
+            ('approved', 'Approved'),
+            ('rejected', 'Rejected')
+        ]
+    )
+    requested_on = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Edit request for {self.player.name} ({self.status})"
+
 
 # We are no longer using these models, but it's safe to leave them for now
 class Match(models.Model):
